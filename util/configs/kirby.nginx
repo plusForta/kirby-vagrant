@@ -1,0 +1,71 @@
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/local;
+
+    access_log /var/log/nginx/kirby.log;
+    error_log /var/log/nginx/kirby.err.log;
+
+    index index.php;
+
+    # turn sendfile off because it has problems with virtualbox shared directories
+    sendfile off;
+
+    server_name local.pfdev.de;
+
+    location ~ \.php$ {
+        try_files $uri $uri/ /index.php$is_args$args;
+        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+        fastcgi_read_timeout 3600;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    # Don't hint these as folders
+    rewrite ^/(content|site|kirby)$ /error last;
+
+    # block content
+    rewrite ^/content/(.*).(txt|md|mdown)$ /error last;
+
+    # block all files in the site and kirby folder from being accessed directly
+    rewrite ^/(site|kirby)/(.*)$ /error last;
+
+    # removes trailing slashes (prevents SEO duplicate content issues)
+    if (!-d $request_filename) {
+        rewrite ^/(.+)/$ /$1 permanent;
+    }
+
+    location ~* /assets/.*\.(js|css)$ {
+        rewrite ^/(.+)\.(\d+)\.(js|css)$ /$1.$3 break;
+    }
+
+
+    # panel links
+    location ~ /panel {
+        try_files $uri $uri/ /panel/index.php?$uri&$args;
+    }
+
+    # site links
+    location ~ / {
+        try_files $uri $uri/ /index.php?$uri&$args;
+    }
+
+    # Prevent clients from accessing hidden files (starting with a dot)
+    # This is particularly important if you store .htpasswd files in the site hierarchy
+    location ~ (?:^|/)\. {
+        deny all;
+    }
+
+    # Prevent clients from accessing to backup/config/source files
+    location ~ (?:\.(?:bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)|~)$ {
+        deny all;
+    }
+
+}
+

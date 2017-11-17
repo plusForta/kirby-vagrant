@@ -3,7 +3,7 @@ VagrantFile and provisioning for a local development environment
 
 ## What this is.
 
-These files, in combination with [Virtualbox]() and [Vagrant]() will allow you
+These files, in combination with [Virtualbox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/downloads.html) will allow you
 to run a local development environment that updates in realtime and provides
 a good framework for a basic Kirby server running on Ubuntu.
 
@@ -23,7 +23,7 @@ Just copy these files into the root of your vagrant project.
 
 If you don't commit your /site/accounts directory and you have multiple
 developers and would like to provide them all with login accounts, create them
-in the panel or with [kirby cli]() and copy them to /util/accounts.  They'll
+in the panel or with [kirby cli](https://github.com/getkirby/cli) and copy them to /util/accounts.  They'll
 get copied into place when people setup their systems with ```vagrant up```.
 
 ### Step by step:
